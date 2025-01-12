@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Send, Phone, MapPin, Mail, Linkedin, Github, Twitter } from 'lucide-react';
+import emailjs from 'emailjs-com'; // Import Email.js
 import './Contact.css';
 
 const Contact = () => {
@@ -8,6 +9,9 @@ const Contact = () => {
     email: '',
     message: ''
   });
+
+  const [popupVisible, setPopupVisible] = useState(false); // State for popup visibility
+  const [popupMessage, setPopupMessage] = useState(''); // Message for the popup
 
   const handleChange = (e) => {
     setFormData({
@@ -18,7 +22,31 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+
+    emailjs
+      .send(
+        'service_7bi08kc', // Replace with your Email.js service ID
+        'template_sn854yy', // Replace with your Email.js template ID
+        formData, // Form data to send
+        '-DyJgH9Z3jxJ-gY8R' // Replace with your Email.js public key
+      )
+      .then(
+        (response) => {
+          console.log('SUCCESS!', response.status, response.text);
+          setPopupMessage('Message sent successfully!'); // Set success message
+          setPopupVisible(true); // Show popup
+          setFormData({ name: '', email: '', message: '' }); // Reset form fields
+        },
+        (err) => {
+          console.error('FAILED...', err);
+          setPopupMessage('Failed to send the message. Please try again.'); // Set error message
+          setPopupVisible(true); // Show popup
+        }
+      );
+  };
+
+  const closePopup = () => {
+    setPopupVisible(false); // Hide popup
   };
 
   return (
@@ -34,7 +62,7 @@ const Contact = () => {
         <div className="contact-grid">
           <div className="contact-info-card">
             <h2 className="info-title">Contact Info</h2>
-            
+
             <div className="info-item">
               <Phone className="info-icon" />
               <div className="info-content">
@@ -116,6 +144,16 @@ const Contact = () => {
           </div>
         </div>
       </div>
+
+      {/* Popup Modal */}
+      {popupVisible && (
+        <div className="popup-overlay" onClick={closePopup}>
+          <div className="popup">
+            <p>{popupMessage}</p>
+            <button className="popup-close" onClick={closePopup}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
