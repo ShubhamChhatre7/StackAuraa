@@ -1,5 +1,8 @@
 # StackAura
 
+![Digital Website](src/assets/Stackaura.png "Stackaura Website")
+
+
 React app using vite web builder
 
 ## Installation
